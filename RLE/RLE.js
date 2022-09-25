@@ -6,7 +6,6 @@ let inputFile = arg[3]
 let outputFile = arg[4]
 
 let inputText = fs.readFileSync(inputFile, "utf-8")
-let outputText = ""
 
 function asciiTable(){
     let table = []
@@ -32,6 +31,7 @@ function encode(string){
         }
     }
     fs.writeFileSync(outputFile, result)
+    return result
 }
 
 function decode(string){
@@ -45,6 +45,7 @@ function decode(string){
         result += part
     }
     fs.writeFileSync(outputFile, result)
+    return result
 }
 
 function getRandomInt(min, max) {
@@ -84,6 +85,6 @@ if (mode === "encode") {
 } else if (mode === "decode") {
     decode(inputText);
 } else if (mode === "test") {
-    console.log("Tested on 10000 random strings")
-    test(10000)
+    test(1000)
+    console.log("Tested on 1000 random strings")
 }
