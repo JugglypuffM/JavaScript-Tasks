@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hamming Code</title>
+    <script>
+        function getRandomInt(min, max) {
+            min = Math.ceil(min)
+            max = Math.floor(max)
+            return Math.floor(Math.random() * (max - min)) + min
+        }
+
+        function validate(string){
+            for(let index = 0; index < 4; index++){
+                if (!((string[index] === "0") || (string[index] === "1"))){
+                    return false
+                }
+            }
+            return true
+        }
+
+        function encode(){
+            let message = document.getElementById('toEncode').value
+            if((message.length === 4)&&(validate(message))){
+                let add1 = (message[0]*1 + message[1]*1 + message[3]*1)%2
+                let add2 = (message[2]*1 + message[1]*1 + message[3]*1)%2
+                let add3 = (message[0]*1 + message[2]*1 + message[3]*1)%2
+                document.getElementById('encodedMessage').value = message + add1.toString() + add2.toString() + add3.toString()
+            }
+            else{
+                document.getElementById('toEncode').value = ""
+                alert("Строка должна содержать четыре цифры, среди которых могут быть только 1 и 0")
+            }
+        }
+
+        function destroy(){
+            let index = getRandomInt(0, 7)
+            let message = document.getElementById('encodedMessage').value
+            let symbol = (!(message[index]*1 === 1))*1
+            document.getElementById('wrongMessage').value = message.substring(0, index) + symbol + message.substring(index+1, message.length)
+        }
+
+        function decode(){
+            let message = document.getElementById('wrongMessage').value
+            let bAdd1 = (((message[0]*1 + message[1]*1 + message[3]*1)%2) === message[4]*1)*1
+            let bAdd2 = (((message[2]*1 + message[1]*1 + message[3]*1)%2) === message[5]*1)*1
+            let bAdd3 = (((message[0]*1 + message[2]*1 + message[3]*1)%2) === message[6]*1)*1
+            let index = 0
+            index = (bAdd2 === 1)&&(bAdd1 + bAdd3 === 0) ? 0 : index
+            index = (bAdd3 === 1)&&(bAdd1 + bAdd2 === 0) ? 1 : index
+            index = (bAdd1 === 1)&&(bAdd2 + bAdd3 === 0) ? 2 : index
+            index = (bAdd1 + bAdd2 + bAdd3 === 0) ? 3 : index
+            index = (bAdd1 === 0)&&(bAdd2 + bAdd3 === 2) ? 4 : index
+            index = (bAdd2 === 0)&&(bAdd1 + bAdd3 === 2) ? 5 : index
+            index = (bAdd3 === 0)&&(bAdd1 + bAdd2 === 2) ? 6 : index
+            document.getElementById('decodedMessage').value = (bAdd1 +bAdd2 +bAdd3 === 3) ? message : message.substring(0, index) + (!(message[index]*1 === 1))*1 + message.substring(index+1, message.length)
+        }
+    </script>
+</head>
+<body>
+    <h1>My Hamming Code</h1>
+    <h2>Four bytes to encode:</h2>
+    <p><label for="toEncode"></label><input type='text' id="toEncode"/> Message</p>
+    <p><input type='button' value="Encode" onClick='encode()'/> <input type='button' value="Destroy" onClick="destroy()"/> <input type='button' value="Decode" onClick="decode()"/></p>
+    <h2>Messages:</h2>
+    <p><label for="encodedMessage"></label><input type='text' id="encodedMessage"/> Encoded right</p>
+    <p><label for="wrongMessage"></label><input type='text' id="wrongMessage"/> Encoded wrong</p>
+    <p><label for="decodedMessage"></label><input type='text' id="decodedMessage"/> Decoded message</p>
+</body>
+</html>
