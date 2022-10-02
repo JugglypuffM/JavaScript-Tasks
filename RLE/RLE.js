@@ -16,33 +16,51 @@ function asciiTable(){
 }
 
 function encode(string){
-    let amount = 0
+    let amount = 1
     let result = ""
     for(let index = 0; index < string.length; index++){
         if (string[index] === string[index + 1])
             amount++
         else {
-            let repeats = Math.trunc(amount/255)
-            for(let jindex = 0; jindex < repeats; jindex++){
-                result = result +  "#" + asciiTable()[255] + string[index]
+            if((amount <= 3)&&(string[index] !== "#")){
+                for(let kindex = 0; kindex < amount; kindex++){
+                    result += string[index]
+                }
+                amount = 1
             }
-            result += "#" + asciiTable()[amount-255*repeats + 1] + string[index]
-            amount = 0
+            else{
+                let repeats = Math.trunc(amount/255)
+                for(let jindex = 0; jindex < repeats; jindex++){
+                    result = result +  "#" + asciiTable()[255] + string[index]
+                }
+                result += "#" + asciiTable()[amount-255*repeats] + string[index]
+                amount = 1
+            }
         }
     }
     fs.writeFileSync(outputFile, result)
+
+    let fileInputSize = fs.statSync(inputFile).size;
+    let fileOutputSize = fs.statSync(outputFile).size;
+    console.log(`Размер изначального файла (в байтах): ${fileInputSize}`)
+    console.log(`Размер выходного файла (в байтах): ${fileOutputSize}`)
+    console.log(`Коэффициент сжатия: ${fileInputSize/fileOutputSize}`)
+
     return result
 }
 
 function decode(string){
     let result = ""
-    for(let index = 0; index < string.length; index += 3){
-        let amount = asciiTable().indexOf(string[index+1])
-        let part = ""
-        for(let jindex = 0; jindex < amount; jindex++){
-            part += string[index+2]
+    for(let index = 0; index < string.length; index ++){
+        if(string[index] === "#"){
+            let amount = asciiTable().indexOf(string[index+1])
+            let part = ""
+            for(let jindex = 0; jindex < amount; jindex++){
+                part += string[index+2]
+            }
+            result += part
+            index += 2
         }
-        result += part
     }
     fs.writeFileSync(outputFile, result)
     return result
@@ -66,6 +84,7 @@ function test(amount){
             }
             word += part
         }
+        fs.writeFileSync(inputFile, word)
         let encoded = encode(word)
         let decoded = decode(encoded)
         if(decoded !== word){
@@ -85,6 +104,6 @@ if (mode === "encode") {
 } else if (mode === "decode") {
     decode(inputText);
 } else if (mode === "test") {
-    test(1000)
+    test(1)
     console.log("Tested on 1000 random strings")
 }
