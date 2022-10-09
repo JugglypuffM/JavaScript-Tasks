@@ -33,8 +33,16 @@ function encode(string){
                 for(let jindex = 0; jindex < repeats; jindex++){
                     result = result +  "#" + asciiTable()[255] + string[index]
                 }
-                result += "#" + asciiTable()[amount-255*repeats] + string[index]
-                amount = 1
+                if((amount - repeats*255 <= 3)&&(string[index] !== "#")){
+                    for(let kindex = 0; kindex < amount - repeats*255; kindex++){
+                        result += string[index]
+                    }
+                    amount = 1
+                }
+                else{
+                    result += "#" + asciiTable()[amount-255*repeats] + string[index]
+                    amount = 1
+                }
             }
         }
     }
