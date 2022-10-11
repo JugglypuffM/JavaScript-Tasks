@@ -1,0 +1,12 @@
+catch 0
+create 1 1
+create 2 1
+create 3 1
+yes
+place 0 2
+star 1 2 1
+plus 2 3 2
+walk yes no
+no
+throw 1
+exit
