@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Of Life</title>
+</head>
+<body>
+
+<script>
+    function calc(){
+        for(let i = 0; i < fillSize; i++){
+            for(let j = 0; j < fillSize; j++){
+                next[i][j] = 0
+                let nc = neighbours(i, j)
+                if(((current[i][j] === 0) && (nc === 3)) || ((current[i][j] === 1) && (nc < 4) && (nc > 1)))
+                    next[i][j] = 1
+            }
+        }
+        for(let i = 0; i < fillSize; i++){
+            for(let j = 0; j < fillSize; j++){
+                current[i][j] = next[i][j]
+            }
+        }
+    }
+
+    function neighbours(i, j){
+        let num = 0;
+        for(let l=-1; l<=1;l++){
+            for(let k= -1; k<=1;  k++){
+                if ((l !== 0) || (k !== 0))
+                    num += current[ (i + l + fillSize)%fillSize ][ (j + k + fillSize)%fillSize ];
+            }
+        }
+        return num;
+    }
+
+    function draw(){
+        for(let i = 0; i < fillSize; i++){
+            for(let j = 0; j < fillSize; j++){
+                if(current[i][j]){
+                    ctx.fillStyle = "#000000"
+                }else{
+                    ctx.fillStyle = "#ffffff"
+                }
+                ctx.fillRect(i*cellSize, j*cellSize, cellSize, cellSize)
+            }
+        }
+    }
+
+    function init(){
+        cellSize = document.getElementById("size").value
+        if(cellSize > 250){
+            alert("Too BIG")
+            document.getElementById("size").value = 10
+        }
+        if(cellSize < 1){
+            alert("tOO small or n0th1g")
+            document.getElementById("size").value = 10
+        }
+        fillSize = 500/cellSize
+        works = 0
+        current = new Array(fillSize)
+        next = new Array(fillSize)
+        c = document.getElementById("myCanvas");
+        ctx = c.getContext("2d");
+        for(let i = 0; i < fillSize; i++){
+            current[i] = new Array(fillSize)
+            next[i] = new Array(fillSize)
+        }
+        for(let i = 0; i < fillSize; i++){
+            for(let j = 0; j < fillSize; j++){
+                current[i][j] = Math.round(Math.random()*Math.random())
+            }
+        }
+        draw()
+    }
+
+    function begin(){
+        if(works === 0){
+            let time = document.getElementById("time").value
+            if(time < 1){
+                alert("small or nothing given")
+                document.getElementById("time").value = 50
+            }
+            tm = setInterval(step, time)
+            works = 1
+        }
+    }
+
+    function stop(){
+        clearInterval(tm)
+        works = 0
+    }
+
+    function step(){
+        calc()
+        draw()
+    }
+
+    function one_step(){
+        calc()
+        draw()
+    }
+
+</script>
+
+<h1>My Game</h1>
+<h2>Scale:</h2>
+<p><label for="size"></label><input type='number' id="size"/> Size of the Cell</p>
+<p><label for="time"></label><input type='number' id="time"/> Update frequency</p>
+<h2>Buttons:</h2>
+<p><input type='button' value="Initialize" onClick='init()'/> <input type='button' value="Begin Game!" onClick="begin()"/></p>
+<p><input type='button' value="One Step" onClick="one_step()"/> <input type='button' value="Stop It!" onClick="stop()"/></p>
+<canvas id="myCanvas" width="500px" height="500px" style="border:1px solid #d3d3d3;"></canvas>
+
+</body>
+</html>
