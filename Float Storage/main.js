@@ -10,13 +10,14 @@ let input = fs.readFileSync(inputFile, "utf-8")
 
 switch (mode) {
     case "convert":
-        let converted = convert.convert(input)
+        let converted = convert.toBin(input)
         fs.writeFileSync(outputFile, converted, "utf-8")
         console.log("Encoding completed!")
         break
     case "calculate":
-        let calculated = add.add(input)
-        fs.writeFileSync(outputFile, calculated, "utf-8")
+        let calculated = add.calculate(input)
+        let dec = convert.fromBin(calculated)
+        fs.writeFileSync(outputFile, calculated + " ~ " + dec.toString(), "utf-8")
         console.log("Calculated!")
         break
 }

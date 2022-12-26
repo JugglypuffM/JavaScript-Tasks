@@ -1,6 +1,6 @@
-module.exports = {convert}
+module.exports = {toBin, fromBin}
 
-function convert(input){
+function toBin(input){
     let result = ""
 
     if(input[0] !== "-"){
@@ -39,5 +39,30 @@ function convert(input){
         return "0 00000000 00000000000000000000000"
     }else{
         return ("1 11111111 00000000000000000000000").slice(0, 34)
+    }
+}
+
+function fromBin(input){
+    if(/[01] 11111111 10000000000000000000000/.test(input)){
+        return "NaN"
+    }else if(input === "0 11111111 00000000000000000000000"){
+        return "+infinity";
+    }else if(/[01] 00000000 [01]{23}/.test(input)){
+        let result = 0;
+        let count = 1;
+        for(let i = 11; i < input.length; i++){
+            if(input[i] === "1"){
+                result += 2**(-126-count)
+            }
+            count++;
+        }
+        return result
+    }else if(input === "0 00000000 00000000000000000000000"){
+        return "0"
+    }else if(input === "1 11111111 00000000000000000000000"){
+        return "-infinity"
+    }else{
+        input = input.split(" ")
+        return (-1)**(input[0]*1)*parseInt(("1." + input[2]).replace('.', ''), 2) / Math.pow(2, (("1." + input[2]).split('.')[1] || '').length)*2**(parseInt(input[1], 2) - 127)
     }
 }
